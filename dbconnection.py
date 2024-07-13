@@ -101,15 +101,9 @@ class DbConnection(ABC):
       Format of conection string is "param=value" with pairs separated by a semicolon.
 
       Function returns a dictionary of parameters/values in connection string
-
-      Parameters with multiple values are specified as follows:
-
-        "param=value1,value2,value3"
-      
-      NOTE:  As the multi-value parameters use comma's a delimiters, commas should be 
-             avoided in other parameters in connection string.
+    
     """
-    return dict([(opt.split('=')[0],opt.split('=')[1] if opt.split('=')[1].find(',') == -1 else opt.split('=')[1].split(',')) for opt in s.split(';')])
+    return dict([(opt.split('=')[0],opt.split('=')[1]) for opt in s.split(';')])
 
 class MySqlConn(DbConnection):
   """
