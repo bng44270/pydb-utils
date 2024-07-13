@@ -1,4 +1,7 @@
 #########################################
+#
+# NOTE:  This has been replaced by MySqlConn in dbconnection.py 
+#
 # (Another) Quick and Dirty Wrapper for MySQL Library
 #
 # For usage information type:

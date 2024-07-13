@@ -1,4 +1,7 @@
 #########################################
+#
+# NOTE:  This has been replaced by SqliteConn in dbconnection.py 
+#
 # (Another) Quick and Dirty Wrapper for SQLite Library
 #
 # For usage information type:
