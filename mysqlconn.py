@@ -8,7 +8,6 @@
 #########################################
 
 import pymysql.cursors
-from re import match as regex_match
 
 class MySqlConn:
   """
@@ -43,10 +42,11 @@ class MySqlConn:
     
     with self.CONN.cursor() as cursor:
       cursor.execute(q)
-      if cmd.upper() in ['INSERT','UPDATE','ALTER','CREATE','DELETE','DROP']:
-        self.CONN.commit()
       
-      return results.fetchall() if count == 0 else results.fetchmany(count)
+      if cmd.upper() in ['INSERT','UPDATE','ALTER','CREATE','DELETE','DROP']:
+        self.CONN.commit()  
+      else:
+        return cursor.fetchall() if count == 0 else cursor.fetchmany(count)
   
   def TableSchema(self,t):
     """
@@ -56,7 +56,9 @@ class MySqlConn:
     fieldlist = []
     
     with self.SCH.cursor() as cursor:
-      results = cursor.execute(f'SELECT column_name FROM columns WHERE table_name=\'{t}\';')
+      cursor.execute(f'SELECT column_name FROM columns WHERE table_name=\'{t}\';')
+
+      results = cursor.fetchall()
       
       for thisfield in results:
         fieldlist.append(thisfield[0])

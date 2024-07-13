@@ -8,7 +8,6 @@
 #########################################
 
 import sqlite3
-from re import match as regex_match
 
 class SqliteConn:
   """
