@@ -1,21 +1,10 @@
 #########################################
 # (Another) Quick and Dirty Wrapper for SQLite Library
 #
-# Usage:
+# For usage information type:
 #
-#   # Add additional PRAGMA commands to the second argument array
-#   mydb = SqliteConn('/path/to/file.db',['foreign_key = ON'])
-#   
-#   # Run any SQL query (returns same as the fetchall command)
-#   mydb.Run('SELECT * FROM table_name;')
+#    help(SqliteConn)
 #
-#   # Optionally Supply a count for number of records (returns same as fetchmany)
-#   mydb.Run('Select * from table_name;',2)
-#   
-#   # If a statement is issued that modifies data/schema, changes are committed to the file
-#   mydb.Run('CREATE TABLE people(name text, age integer);')
-#   
-# When the object is garbage collected the DB connection is closed
 #########################################
 
 import sqlite3
