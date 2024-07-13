@@ -9,7 +9,7 @@
 
 import sqlite3
 
-class SqliteConn:
+class SqliteConn(DbConnection):
   """
     Usage:
       
@@ -29,6 +29,7 @@ class SqliteConn:
   def __del__(self):
     self.db.close()
   
+  @DbConnection
   def Run(self,q,count=0):
     """
       # Run SQL query (returns results of fetchall() function)
