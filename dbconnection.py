@@ -24,7 +24,7 @@ class DbConnection(ABC):
     
       - Run - executes SQL query
       - Tables - returns list of tables
-      - TableSchema - returns list of fields in specified table
+      - TableFields - returns list of fields in specified table
     
     In method examples, the database connection instance is named dbconn
   """
@@ -76,13 +76,24 @@ class DbConnection(ABC):
     pass
   
   @abstractclassmethod
-  def TableSchema(self,t):
+  def TableFields(self,t):
     """
       # Return a list containing fields in a specified table
       schema = dbconn.TableSchema("contacts")
     """
     pass
   
+  def Schema(self):
+    """
+      Return dictionary containing database schema (tables and fields)
+
+      {
+        "table1" : ["field1","field2","field3"],
+        "table2" : ["field4","field5","field6"] 
+      }
+    """
+    return dict([(t,self.TableFields(t)) for t in self.Tables()])
+
   def parseconnectionstring(self,s):
     """
       Parse the connection string in constructor
@@ -139,7 +150,7 @@ class MySqlConn(DbConnection):
 
       return tablelist
 
-  def TableSchema(self,t):
+  def TableFields(self,t):
     fieldlist = []
     
     with self.SCH.cursor() as cursor:
@@ -185,5 +196,5 @@ class SqliteConn(DbConnection):
   def Tables(self):
     return [a[0] for a in self.Run('SELECT name from sqlite_master where type=\'table\';')]
   
-  def TableSchema(self,t):
+  def TableFields(self,t):
     return [a[0] for a in self.Run(f'select name from pragma_table_info(\'{t}\');')]
