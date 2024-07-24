@@ -28,6 +28,13 @@ class DbConnection(ABC):
     
     In method examples, the database connection instance is named dbconn
   """
+
+  OP_EQ = '='
+  OP_GT = '>'
+  OP_LT = '<'
+  OP_LIKE = 'LIKE'
+  VALID_OPS = [OP_EQ,OP_GT,OP_LT,OP_LIKE]
+
   @abstractclassmethod
   def __init__(self,conn):
     """
@@ -79,7 +86,7 @@ class DbConnection(ABC):
   def TableFields(self,t):
     """
       # Return a list containing fields in a specified table
-      schema = dbconn.TableSchema("contacts")
+      schema = dbconn.TableFields("contacts")
     """
     pass
   
@@ -93,6 +100,47 @@ class DbConnection(ABC):
       }
     """
     return dict([(t,self.TableFields(t)) for t in self.Tables()])
+  
+  def GetRows(self,t,f=[],w=[],o='',a=True,l=200):
+    """
+      Returns an array of rows where each row is represented as a dictionary
+      where the key is the field name and the value is the field value
+
+      [
+        {
+          "name":"Jim",
+          "age":12
+        },
+
+        ...
+      ]
+
+      Syntax:
+
+        rows = dbconn.GetRows('table_name',['fields','to','return'],['field',OP_XX,'value],'order_by_field',True,10)
+      
+      The first argument is the name of the table to query.  The second argument
+      is a lsit of fields to return in the results.  The third argument is a list
+      containing conditions to return.
+    """
+    if len(f) == 0:
+      f = self.TableFields(t)
+    
+    if len(o) == 0:
+      o = f[0]
+    
+    if self.__validatequery(t,f,w,o):
+      orderby = f'ORDER BY {o} {"ASC" if a else "DESC"}'
+      where = ' AND '.join([' '.join(c) for c in w]) if len(w) > 0 else ''
+      sql = f'SELECT {",".join(f)} FROM {t} {where} {orderby} LIMIT {l};'
+      
+      print(sql)
+      
+      result = self.Run(sql)
+
+      return [dict([(self.TableFields(t)[i],v) for (i,v) in enumerate(a)]) for a in result]
+    else:
+      raise TypeError(f'Error valiating query ({t};{str(f)};{str(w)};{o})')
 
   def parseconnectionstring(self,s):
     """
@@ -104,6 +152,28 @@ class DbConnection(ABC):
     
     """
     return dict([(opt.split('=')[0],opt.split('=')[1]) for opt in s.split(';')])
+  
+  def __validatequery(self,table,fields,where,orderby):
+    if not table in self.Tables():
+      return False
+    
+    fieldcheck = self.TableFields(table)
+
+    for thisfield in fields:
+      if not thisfield in fieldcheck:
+        return False
+    
+    for cond in where:
+      if not cond[0] in fieldcheck:
+        print(str(cond))
+        raise TypeError("1")
+        return False
+    
+    if not orderby in fieldcheck:
+      raise TypeError("2")
+      return False
+    
+    return True
 
 class MySqlConn(DbConnection):
   """
